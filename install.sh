@@ -2,7 +2,7 @@
 # ==============================================================
 # 飞牛 OpenClaw 升级脚本下载工具
 # ==============================================================
-# 功能：下载 upgrade_openclaw.sh 到本地，不需要 root
+# 功能：下载 upgrade_openclaw.sh 到 /tmp，不需要 root
 # 下载后由用户自行执行（执行时才需要 root）
 #
 # 使用方法：
@@ -28,7 +28,7 @@ DEST="/tmp/upgrade_openclaw.sh"
 do_download() {
   echo ""
   info "下载 upgrade_openclaw.sh..."
-  if ! curl --fail --silent --show-error -L "$GITHUB_RAW/upgrade_openclaw.sh" -o "$DEST" 2>/dev/null; then
+  if ! curl --fail --silent --show-error -L "$GITHUB_RAW/upgrade_openclaw.sh" -o "$DEST" 2>&1; then
     error "下载失败，请检查网络连接"
     exit 1
   fi
@@ -40,15 +40,14 @@ do_run() {
   echo ""
   info "启动升级脚本..."
   echo ""
-  sudo bash "$DEST" "$@"
+  if ! sudo bash "$DEST" "$@"; then
+    error "脚本执行失败"
+    exit 1
+  fi
 }
 
-# -------------------------------------------
-# 主逻辑
-# -------------------------------------------
 MODE="run"
 [ "${1:-}" = "--dl" ] && MODE="dl"
-[ "${1:-}" = "--download" ] && MODE="dl"
 
 if [ "$MODE" = "dl" ]; then
   do_download
