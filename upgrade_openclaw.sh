@@ -350,13 +350,16 @@ main() {
  echo -e "${WHITE}目标版本：${GREEN}${TARGET_VER}${NC}"
  echo -e "${WHITE}日志文件：${GRAY}${LOG}${NC}"
  echo ""
- echo -e "${YELLOW}后续操作：${NC}"
- echo -e " 1. ${CYAN}飞牛应用管理 → 重新启用 OpenClaw${NC}"
- echo -e " 2. 等待30秒后验证：${CYAN}openclaw --version${NC}"
- echo -e " 3. ${RED}微信需重新扫码${NC}：飞牛应用管理 → OpenClaw → 微信通道"
- echo -e " 4. ${RED}飞书需重新授权${NC}：在飞书中给机器人发 ${CYAN}/feishu auth${NC}"
+ echo -e "${YELLOW}升级完成！${NC}"
  echo ""
- echo -e "${GRAY}插件安装请参考 fnos-plugin-install skill${NC}"
+ echo -e "升级后插件可能不兼容，无需手动操作，告诉 OpenClaw 就行了："
+ echo ""
+ echo -e "  在 OpenClaw 里发送："
+ echo -e "  ${CYAN}\"我的飞书机器人不能用了，帮我修复一下\""
+ echo -e "  或"
+ echo -e "  ${CYAN}\"我的微信通道坏了，帮我修复一下\""
+ echo ""
+ echo -e "OpenClaw 会自动完成插件的修复/重装/授权。"
  line
 }
 
