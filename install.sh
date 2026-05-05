@@ -2,12 +2,17 @@
 # ==============================================================
 # 飞牛 OpenClaw 升级脚本下载工具
 # ==============================================================
-# 功能：下载 upgrade_openclaw.sh 到 /tmp，不需要 root
-# 下载后由用户自行执行（执行时才需要 root）
+# 功能：下载 upgrade_openclaw.sh 到 /tmp 并执行
+# 需要 root 权限执行
 #
 # 使用方法：
+#   sudo -i
+#   curl -L https://raw.githubusercontent.com/a807866778/fnos-channel-fix/main/install.sh | bash
+#
+# 或者分步：
+#   sudo -i
 #   curl -L https://raw.githubusercontent.com/a807866778/fnos-channel-fix/main/install.sh -o /tmp/install.sh
-#   chmod +x /tmp/install.sh && bash /tmp/install.sh
+#   bash /tmp/install.sh
 # ==============================================================
 
 RED='\033[0;31m'
@@ -40,7 +45,7 @@ do_run() {
   echo ""
   info "启动升级脚本..."
   echo ""
-  if ! sudo bash "$DEST" "$@"; then
+  if ! bash "$DEST" "$@"; then
     error "脚本执行失败"
     exit 1
   fi
