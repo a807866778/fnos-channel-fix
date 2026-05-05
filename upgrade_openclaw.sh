@@ -55,7 +55,7 @@ detect_env() {
      break
    fi
  done
- [ -z "$APPHOME" ] && { error "未找到 OpenClaw 目录（trim.openclaw）"; exit 1; }
+ if [ -z "$APPHOME" ]; then error "未找到 OpenClaw 目录（trim.openclaw）"; exit 1; fi
 
  APPDEST="$(dirname "$APPHOME")/@appdest/trim.openclaw"
  OPENCLAW_DIR="$APPHOME/data/openclaw"
@@ -70,21 +70,30 @@ detect_env() {
      break
    fi
  done
- [ -z "$BUN_CMD" ] && [ -f "$APPDEST/bunjs/bin/bun" ] && BUN_CMD="$APPDEST/bunjs/bin/bun"
- [ -z "$BUN_CMD" ] && BUN_CMD=$(command -v bun 2>/dev/null || true)
+ if [ -z "$BUN_CMD" ] && [ -f "$APPDEST/bunjs/bin/bun" ]; then
+   BUN_CMD="$APPDEST/bunjs/bin/bun"
+ fi
+ if [ -z "$BUN_CMD" ]; then
+   BUN_CMD=$(command -v bun 2>/dev/null || true)
+ fi
 
  if [ -f "$PKG_DIR/package.json" ]; then
    CURRENT_VER=$(python3 -c "import json; print(json.load(open('$PKG_DIR/package.json')).get('version','未知'))" 2>/dev/null || echo "未知")
  fi
- [ -z "$CURRENT_VER" ] && CURRENT_VER="未知"
+ CURRENT_VER="${CURRENT_VER:-未知}"
 }
 
 # ==============================================================
 fetch_npm_latest() {
  local LATEST=""
  LATEST=$(curl -s --max-time 5 "https://registry.npmmirror.com/openclaw/latest" 2>/dev/null | python3 -c "import sys,json; print(json.load(sys.stdin).get('version',''))" 2>/dev/null || true)
- [ -z "$LATEST" ] && LATEST=$(curl -s --max-time 5 "https://registry.npmjs.org/openclaw/latest" 2>/dev/null | python3 -c "import sys,json; print(json.load(sys.stdin).get('version',''))" 2>/dev/null || true)
- [ -z "$LATEST" ] && { warn "无法获取最新版本，默认使用 2026.5.4"; LATEST="2026.5.4"; }
+ if [ -z "$LATEST" ]; then
+  LATEST=$(curl -s --max-time 5 "https://registry.npmjs.org/openclaw/latest" 2>/dev/null | python3 -c "import sys,json; print(json.load(sys.stdin).get('version',''))" 2>/dev/null || true)
+fi
+if [ -z "$LATEST" ]; then
+  warn "无法获取最新版本，默认使用 2026.5.4"
+  LATEST="2026.5.4"
+fi
  echo "$LATEST"
 }
 
