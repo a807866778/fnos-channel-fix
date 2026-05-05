@@ -6,71 +6,64 @@
 
 ---
 
-## 这个工具包有什么用？
+## 工作流程
 
-装好之后，直接跟 OpenClaw 说人话就能管理飞书/微信插件，**不需要 SSH，不需要进小黑框**。
-
-| 你跟 OpenClaw 说 | OpenClaw 自动做 |
-|-----------------|---------------|
-| "帮我安装飞书插件" | 检测环境 → npm 安装 → 重启 → 验证 |
-| "我的微信机器人坏了" | 诊断问题 → 重装/修复 → 验证 |
-| "飞书机器人没反应了" | 检查状态 → 给出解决方法 |
+```
+用户升级/降级 OpenClaw
+       ↓
+插件可能出现版本不兼容
+       ↓
+触发 fnos-plugin-install skill（自然语言）
+       ↓
+自动诊断 + 修复/降级插件 → 完成
+```
 
 ---
 
-## 第一步：先把工具包安装到你的 OpenClaw
+## 第一步：先把 Skill 安装到你的 OpenClaw
 
-> ⚠️ 这一步需要通过 SSH 连接 fnOS 执行**一次**，之后就不需要了。
-
-用 SSH 登录你的 fnOS，执行这条命令：
+> ⚠️ 只需 SSH 执行**一次**，之后所有插件管理都通过自然语言完成。
 
 ```bash
+# SSH 登录 fnOS，执行这条命令安装 skill
 npx -y skills add https://github.com/a807866778/fnos-channel-fix --skill
 ```
 
-等待出现 `✓ done` 即表示安装成功。
+安装完成后，直接说：
 
-![skill 安装示意](https://img.shields.io/badge/-blue?style=for-the-badge)
-
----
-
-## 工具二：OpenClaw 主体升级脚本（bash）
-
-> 需要 SSH 手动执行，不是自然语言触发的 skill。
-
-装好 skill 后，直接说这些话来**管理插件**：
-
-| 你跟 OpenClaw 说 | OpenClaw 自动做 |
-|-----------------|---------------|
-| "帮我装飞书插件" | npm 安装 → 重启 → 验证 |
-| "帮我装微信插件" | npm 安装 → 重启 → 验证 |
-| "我的飞书机器人不能用了" | 诊断 → 重装/修复 |
-
-而 OpenClaw 主体升级需要手动 SSH 执行脚本（见下方「OpenClaw 升级脚本」）。
+| 你说 | OpenClaw 自动做 |
+|------|--------------|
+| "帮我装飞书插件" | 检测 → npm 安装 → 重启 → 验证 |
+| "帮我装微信插件" | 检测 → npm 安装 → 重启 → 验证 |
+| "我的飞书机器人不能用了" | 诊断 → 修复/重装 → 验证 |
+| "升级飞书插件" | 检测版本 → 升级 → 验证 |
 
 ---
 
-## 它是怎么工作的？
+## 第二步：升级 OpenClaw 主体（需要 SSH 手动操作）
 
-当你说「帮我装飞书插件」，OpenClaw 内部发生的事：
+> upgrade_openclaw.sh 是 bash 脚本，不是 skill，需要 SSH 执行。
 
-```
-你发送消息
-    ↓
-OpenClaw 匹配到 fnos-plugin-install skill
-    ↓
-Skill 自动检测 fnOS 安装路径
-    ↓
-执行 npm install @openclaw/feishu（安装到正确目录）
-    ↓
-复制到 OpenClaw 扩展目录
-    ↓
-重启 OpenClaw 网关
-    ↓
-验证结果并告诉你
+```bash
+# SSH 登录 fnOS，执行这条命令（一键下载+运行）
+curl -L https://raw.githubusercontent.com/a807866778/fnos-channel-fix/main/install.sh | bash
 ```
 
-**全程你只需要说话，不需要输入任何命令。**
+或者分步执行：
+
+```bash
+# 1. SSH 登录 fnOS
+ssh 你的用户名@fnOS的IP
+
+# 2. 下载安装工具
+curl -L https://raw.githubusercontent.com/a807866778/fnos-channel-fix/main/install.sh -o /tmp/install.sh
+chmod +x /tmp/install.sh
+
+# 3. 运行（自动下载脚本并以 root 执行）
+bash /tmp/install.sh
+```
+
+安装工具会自动把最新版的 `upgrade_openclaw.sh` 下载到 `/tmp/`，然后以 root 执行。
 
 ---
 
@@ -78,37 +71,8 @@ Skill 自动检测 fnOS 安装路径
 
 - 飞牛 fnOS 系统
 - OpenClaw 已安装并运行
-- fnOS 能访问网络（下载插件用）
-- SSH 连接 fnOS 执行一次安装命令（仅首次需要）
-
----
-
-本仓库包含两个独立工具：
-
-| 工具 | 类型 | 使用方式 |
-|------|------|---------|
-| `upgrade_openclaw.sh` | **bash 脚本**（需要 root） | SSH 进 fnOS 后手动执行 |
-| fnos-plugin-install | **AI Skill** | 安装后用自然语言触发，全自动 |
-
-### OpenClaw 主体升级（bash 脚本）
-
-升级脚本需要通过 SSH 手动执行，**不是 skill，无法用自然语言触发**：
-
-```bash
-# 连接到 fnOS
-ssh 你的用户名@fnOS的IP
-
-# 下载并运行升级脚本
-sudo -i bash <(curl -L https://raw.githubusercontent.com/a807866778/fnos-channel-fix/main/upgrade_openclaw.sh)
-```
-
-或者分步执行：
-```bash
-sudo -i
-curl -L https://raw.githubusercontent.com/a807866778/fnos-channel-fix/main/upgrade_openclaw.sh -o ~/upgrade_openclaw.sh
-chmod +x ~/upgrade_openclaw.sh
-bash ~/upgrade_openclaw.sh
-```
+- fnOS 能访问 GitHub
+- SSH 连接 fnOS 执行一次 skill 安装（仅首次）
 
 ---
 
@@ -127,15 +91,15 @@ bash ~/upgrade_openclaw.sh
 
 ```
 fnos-channel-fix/
-├── fnos-channel-fix.skill     # Skill 安装包（OpenClaw 直接识别）
+├── fnos-channel-fix.skill     # Skill 包（OpenClaw 直接识别安装）
 ├── SKILL.md                   # Skill 逻辑说明（给 AI Agent 看的）
 ├── fnos-plugin-install/       # 插件安装子模块
 │   └── SKILL.md
 ├── upgrade_openclaw.sh        # OpenClaw 主体升级脚本（需要 root）
-├── install.sh                 # 一键下载升级脚本的工具
-├── README.md                 # 本文件
+├── install.sh                 # 下载+执行工具（下载脚本并运行）
+├── README.md                  # 本文件
 ├── FORUM_POST.md             # 论坛发帖模板
-└── references/               # 参考资料
+└── references/
     └── troubleshooting.md    # 故障排查详解
 ```
 
@@ -143,25 +107,17 @@ fnos-channel-fix/
 
 ## 常见问题
 
-**Q: 安装 skill 需要 SSH，那不是还是要用命令行？**
+**Q: skill 安装需要 SSH，那不是还是要用命令行？**
 
-A: 是的，首次安装需要 SSH 执行一次 `npx -y skills add` 命令，这是 OpenClaw 的 skill 安装机制决定的。但这只是**一次性的**，装好之后所有插件管理都可以用自然语言操作，不需要再 SSH。
-
-**Q: 安装 skill 需要多久？**
-
-A: 通常 1-2 分钟，主要时间花在下载 Skill 包上。
-
-**Q: 安装失败了怎么办？**
-
-A: 确保 fnOS 能访问 GitHub（有些网络环境需要代理）。也可以直接通过 SSH 手动管理插件，参考 `references/troubleshooting.md`。
+A: 是的，但只需要执行一次 `npx -y skills add ...` 命令。装好之后所有插件管理都通过自然语言完成，**不需要再 SSH**。
 
 **Q: 升级 OpenClaw 后插件还能用吗？**
 
-A: 可以，升级主体不影响插件。但如果遇到插件问题，重新说一句"帮我重装飞书插件"即可。
+A: 可以正常使用。但如果遇到插件问题（版本不兼容、加载失败等），直接说"飞书机器人不能用了"，skill 会自动修复。
 
-**Q: 微信和飞书可以同时安装吗？**
+**Q: 安装失败了怎么办？**
 
-A: 可以，分别说"帮我装飞书插件"和"帮我装微信插件"即可。
+A: 确保 fnOS 能访问 GitHub。也可以通过 SSH 手动管理插件，参考 `references/troubleshooting.md`。
 
 ---
 
@@ -174,4 +130,4 @@ A: 可以，分别说"帮我装飞书插件"和"帮我装微信插件"即可。
 
 ## 免责说明
 
-本工具免费开源，使用前请务必确认插件配置已备份。作者不对因使用本工具造成的任何数据损失负责。
+本工具免费开源，使用前请务必确认配置已备份。作者不对因使用本工具造成的任何数据损失负责。
