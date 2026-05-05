@@ -172,7 +172,7 @@ download_package() {
 do_upgrade() {
  log "=== 开始升级 OpenClaw ${TARGET_VER} ==="
 
- printf "${YELLOW}是否全量备份当前数据？(y/N)：${NC}"
+ printf "${YELLOW}是否全量备份当前数据？(Y/n)：${NC}"
  read DO_BACKUP
  [[ "$DO_BACKUP" != "y" && "$DO_BACKUP" != "Y" ]] && info "跳过备份" || full_backup
 
@@ -339,14 +339,14 @@ main() {
  info "目标版本：${TARGET_VER}"
 
  if [ "$TARGET_VER" = "$CURRENT_VER" ]; then
-   printf "${YELLOW}目标版本与当前版本相同，是否确认升级？(y/N)：${NC}"
+   printf "${YELLOW}目标版本与当前版本相同，是否确认升级？(Y/n)：${NC}"
    read CONFIRM
-   [[ "$CONFIRM" != "y" && "$CONFIRM" != "Y" ]] && error "已取消" && exit 0
+   [[ "${CONFIRM,,}" != "y" ]] && error "已取消" && exit 0
  else
    line
-   printf "${YELLOW}确认开始升级？(y/N)：${NC}"
+   printf "${YELLOW}确认开始升级？(Y/n)：${NC}"
    read CONFIRM
-   [[ "$CONFIRM" != "y" && "$CONFIRM" != "Y" ]] && error "已取消" && exit 0
+   [[ "${CONFIRM,,}" != "y" ]] && error "已取消" && exit 0
  fi
 
  do_upgrade
