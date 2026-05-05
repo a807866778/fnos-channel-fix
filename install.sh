@@ -1,7 +1,16 @@
 #!/bin/bash
 # ==============================================================
-# 飞牛 OpenClaw | 一键安装工具
+# 飞牛 OpenClaw 升级脚本下载+执行工具
 # ==============================================================
+# 本脚本只负责下载并运行 upgrade_openclaw.sh（OpenClaw 主体升级）
+#
+# 插件（飞书/微信）安装请参考：
+#   - fnos-plugin-install skill（给 AI Agent 看的引导）
+#   - SKILL.md（面向新手用户的详细图文步骤）
+#
+# 下载插件安装文档：
+#   curl -L https://github.com/a807866778/fnos-channel-fix/raw/main/SKILL.md -o ~/SKILL.md
+#
 # 使用方法：
 #   sudo -i
 #   curl -L https://raw.githubusercontent.com/a807866778/fnos-channel-fix/main/upgrade_openclaw.sh -o ~/upgrade_openclaw.sh
