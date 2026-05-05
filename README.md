@@ -34,50 +34,19 @@ npx -y skills add https://github.com/a807866778/fnos-channel-fix --skill
 
 ---
 
-## 第二步：开始使用
+## 工具二：OpenClaw 主体升级脚本（bash）
 
-安装完成后，直接在 OpenClaw 对话里说人话：
+> 需要 SSH 手动执行，不是自然语言触发的 skill。
 
-### 安装飞书插件
+装好 skill 后，直接说这些话来**管理插件**：
 
-```
-帮我装一下飞书插件
-```
-或
-```
-安装飞书插件
-```
+| 你跟 OpenClaw 说 | OpenClaw 自动做 |
+|-----------------|---------------|
+| "帮我装飞书插件" | npm 安装 → 重启 → 验证 |
+| "帮我装微信插件" | npm 安装 → 重启 → 验证 |
+| "我的飞书机器人不能用了" | 诊断 → 重装/修复 |
 
-### 安装微信插件
-
-```
-帮我装微信插件
-```
-或
-```
-安装微信插件
-```
-
-### 修复插件问题
-
-```
-我的飞书机器人不能用了
-```
-```
-微信通道坏了，帮我修一下
-```
-```
-飞书机器人没反应了
-```
-
-### 升级插件到最新版
-
-```
-升级飞书插件到最新版本
-```
-```
-更新微信插件
-```
+而 OpenClaw 主体升级需要手动 SSH 执行脚本（见下方「OpenClaw 升级脚本」）。
 
 ---
 
@@ -114,15 +83,16 @@ Skill 自动检测 fnOS 安装路径
 
 ---
 
-## OpenClaw 升级脚本（独立使用）
+本仓库包含两个独立工具：
 
-本仓库也包含 OpenClaw 主体升级脚本，安装 skill 后可以这样触发：
+| 工具 | 类型 | 使用方式 |
+|------|------|---------|
+| `upgrade_openclaw.sh` | **bash 脚本**（需要 root） | SSH 进 fnOS 后手动执行 |
+| fnos-plugin-install | **AI Skill** | 安装后用自然语言触发，全自动 |
 
-```
-帮我升级 OpenClaw 到最新版本
-```
+### OpenClaw 主体升级（bash 脚本）
 
-或手动通过 SSH 升级：
+升级脚本需要通过 SSH 手动执行，**不是 skill，无法用自然语言触发**：
 
 ```bash
 # 连接到 fnOS
@@ -130,6 +100,14 @@ ssh 你的用户名@fnOS的IP
 
 # 下载并运行升级脚本
 sudo -i bash <(curl -L https://raw.githubusercontent.com/a807866778/fnos-channel-fix/main/upgrade_openclaw.sh)
+```
+
+或者分步执行：
+```bash
+sudo -i
+curl -L https://raw.githubusercontent.com/a807866778/fnos-channel-fix/main/upgrade_openclaw.sh -o ~/upgrade_openclaw.sh
+chmod +x ~/upgrade_openclaw.sh
+bash ~/upgrade_openclaw.sh
 ```
 
 ---
