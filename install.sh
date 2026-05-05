@@ -28,7 +28,7 @@ error() { echo -e "${RED}✖${NC} $1"; }
 ok()    { echo -e "${GREEN}✔${NC} $1"; }
 
 GITHUB_RAW="https://raw.githubusercontent.com/a807866778/fnos-channel-fix/main"
-DEST="/tmp/upgrade_openclaw.sh"
+DEST="/root/upgrade_openclaw.sh"
 
 do_download() {
   echo ""
