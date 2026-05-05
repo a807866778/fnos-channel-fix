@@ -48,8 +48,14 @@ OpenClaw 会自动执行 `npx -y skills add` 命令完成安装。
 > upgrade_openclaw.sh 是 bash 脚本，不是 skill，需要 SSH 执行。
 
 ```bash
-# SSH 登录 fnOS，执行这条命令（一键下载+运行）
-curl -L https://raw.githubusercontent.com/a807866778/fnos-channel-fix/main/install.sh -o /tmp/install.sh && chmod +x /tmp/install.sh && sudo bash /tmp/install.sh
+# SSH 登录 fnOS
+ssh 你的用户名@fnOS的IP
+
+# 切换到 root 环境
+sudo -i
+
+# 下载并运行升级脚本
+curl -L https://raw.githubusercontent.com/a807866778/fnos-channel-fix/main/install.sh | bash
 ```
 
 或者分步执行：
