@@ -20,16 +20,19 @@
 
 ---
 
-## 第一步：先把 Skill 安装到你的 OpenClaw
+## 第一步：安装 Skill 到你的 OpenClaw
 
-> ⚠️ 只需 SSH 执行**一次**，之后所有插件管理都通过自然语言完成。
+> 不需要 SSH！只需要把下面这段话发给你的 OpenClaw，AI Agent 会自动完成安装。
 
-```bash
-# SSH 登录 fnOS，执行这条命令安装 skill
-npx -y skills add https://github.com/a807866778/fnos-channel-fix --skill
+```
+请帮我安装 fnos-channel-fix skill：
+https://github.com/a807866778/fnos-channel-fix
+
+安装完成后告诉我结果。
 ```
 
-安装完成后，直接说：
+OpenClaw 会自动执行 `npx -y skills add` 命令完成安装。
+安装完成后，直接说自然语言来管理插件。
 
 | 你说 | OpenClaw 自动做 |
 |------|--------------|
