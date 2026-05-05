@@ -209,6 +209,14 @@ do_upgrade() {
  "$BUN_CMD" install --registry https://registry.npmmirror.com >/dev/null 2>&1 && \
    ok "依赖安装完成" || warn "依赖安装完成（有警告可忽略）"
 
+ # 补充安装缺失的 peer 依赖（bun 有时会漏装）
+ info "检查全局依赖..."
+ if [ ! -d "$PKG_DIR/node_modules/global-agent" ]; then
+   info "补装 global-agent..."
+   "$BUN_CMD" add global-agent --cwd "$PKG_DIR" --registry https://registry.npmmirror.com >/dev/null 2>&1 || true
+   ok "global-agent 安装完成"
+ fi
+
  fix_weixin_config
 
  # 恢复数据目录权限
