@@ -55,24 +55,10 @@ ssh 你的用户名@fnOS的IP
 sudo -i
 
 # 下载并运行升级脚本
-curl -L https://raw.githubusercontent.com/a807866778/fnos-channel-fix/main/install.sh | bash
+curl -L https://raw.githubusercontent.com/a807866778/fnos-channel-fix/main/install.sh -o ~/install.sh && chmod +x ~/install.sh && bash ~/install.sh
 ```
 
-或者分步执行：
-
-```bash
-# 1. SSH 登录 fnOS
-ssh 你的用户名@fnOS的IP
-
-# 2. 下载安装工具
-curl -L https://raw.githubusercontent.com/a807866778/fnos-channel-fix/main/install.sh -o /tmp/install.sh
-chmod +x /tmp/install.sh
-
-# 3. 运行（自动下载脚本并以 root 执行）
-bash /tmp/install.sh
-```
-
-安装工具会自动把最新版的 `upgrade_openclaw.sh` 下载到 `/tmp/`，然后以 root 执行。
+`~/install.sh` 即 `/root/install.sh`（root 用户 home 目录），不会有权限冲突。
 
 ---
 
