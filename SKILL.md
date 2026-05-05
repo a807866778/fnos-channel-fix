@@ -1,252 +1,108 @@
 ---
 name: fnos-plugin-install
-description: 飞牛 fnOS OpenClaw 飞书/微信插件安装与重装引导。触发词：「安装飞书插件」「重装微信插件」「安装插件」「插件问题」「飞书通道」「微信通道」「feishu」「weixin」「openclaw weixin」「openclaw feishu」。功能：诊断当前插件状态 → 给出安装/重装/修复步骤 → 引导用户操作。
+description: 飞牛 fnOS OpenClaw 飞书/微信插件安装引导。当用户发送「安装飞书插件」「重装微信插件」「飞书通道」「微信通道」「openclaw feishu」「openclaw weixin」或询问插件问题时触发。功能：诊断当前插件状态 → 给出安装/重装步骤 → 提供详细命令和注意事项。
 ---
 
-# 飞牛 fnOS OpenClaw 插件安装指南
+# fnos-plugin-install Skill
 
-> 本文档面向 **飞牛 fnOS + OpenClaw** 用户，特别适合不熟悉命令行的普通用户。
-> 插件安装**在飞牛网页管理界面操作**，不需要进小黑框（SSH）。
+当用户提到以下关键词时触发本 Skill：
+- 「安装飞书插件」「重装飞书」
+- 「安装微信插件」「重装微信」
+- 「飞书通道」「微信通道」
+- 「feishu」「weixin」「openclaw feishu」「openclaw weixin」
+- 「插件坏了」「插件不能用」「机器人没反应」
 
----
+## 核心原则
 
-## 目录
+**不要在 OpenClaw Agent 内执行任何破坏性插件操作**
+- 不要执行 `rm -rf` 插件目录
+- 不要执行 `npm install` 来安装/重装插件（npm 在沙盒里权限受限）
+- **插件安装必须由用户在 fnOS SSH root 会话中手动完成**
+- Agent 只负责：诊断问题 → 给出清晰步骤 → 让用户自己执行
 
-1. [插件是什么？](#1-插件是什么)
-2. [飞书插件安装/重装](#2-飞书插件安装重装)
-3. [微信插件安装/重装](#3-微信插件安装重装)
-4. [常见问题](#4-常见问题)
-5. [手动命令参考](#5-手动命令参考)
+## 诊断流程
 
----
-
-## 1. 插件是什么？
-
-OpenClaw 的插件决定了它能连接哪些聊天平台：
-
-| 插件 | 支持的平台 | 是否需要 |
-|------|-----------|---------|
-| **飞书插件** | 飞书 | ✅ 推荐安装 |
-| **微信插件** | 企业微信/微信 | 可选 |
-
-插件安装在 **飞牛管理页面** → **应用中心** → **OpenClaw** 配置页，不需要 SSH。
-
----
-
-## 2. 飞书插件安装/重装
-
-### 什么情况下需要重装？
-
-- 飞书机器人完全无响应
-- 发送消息没有反应
-- 飞书授权过期了
-- 想升级到更新版本
-
-### 操作步骤
-
-#### 方式一：网页管理界面（推荐新手）
-
-**Step 1.** 打开飞牛管理页面，登录
-
-**Step 2.** 进入 **应用中心** → **OpenClaw** → **插件配置**
-
-**Step 3.** 找到 **飞书/Lark** 插件，点击 **重新安装**
-
-**Step 4.** 页面会提示在飞书中重新授权，复制机器人发送的验证码
-
----
-
-#### 方式二：SSH 命令（适合有技术基础的用户）
-
-如果你习惯用命令行，按以下步骤操作：
-
-```bash
-# 1. 连接到 fnOS（用 PuTTY 或 Windows Terminal）
-ssh fnos用户名@fnos机器IP
-# 例如：ssh admin@192.168.1.100
-
-# 2. 切换到 root
-sudo -i
-
-# 3. 进入 OpenClaw 目录
-cd /vol1/@apphome/trim.openclaw/data/home/.openclaw/npm
-
-# 4. 卸载旧版飞书插件（如果需要重装）
-rm -rf node_modules/@openclaw/feishu
-
-# 5. 安装最新版飞书插件
-npm install @openclaw/feishu --registry https://registry.npmmirror.com
-
-# 6. 重启 OpenClaw
-systemctl --user restart openclaw-gateway
-```
-
----
-
-### 飞书授权步骤
-
-重装后需要在飞书里完成授权：
-
-1. 打开飞书，进入你的机器人对话
-2. 发送命令：`/feishu auth`
-3. 机器人会回复一个链接，点击并完成飞书授权
-4. 授权成功后，发一条测试消息给机器人确认可用
-
----
-
-## 3. 微信插件安装/重装
-
-### 什么情况下需要重装？
-
-- 微信通道完全无法使用
-- 扫码后依然无法收发消息
-- 想升级到更新版本
-
-### 操作步骤（网页管理界面）
-
-**Step 1.** 飞牛管理页面 → **应用中心** → **OpenClaw** → **插件配置**
-
-**Step 2.** 找到 **微信** 插件，点击 **安装**（如果没有）或 **重新安装**
-
-**Step 3.** 按照页面提示，在企业微信后台完成验证
-
----
-
-### 微信插件命令安装
-
-```bash
-# 1. SSH 连接到 fnOS
-ssh fnos用户名@fnos机器IP
-
-# 2. 切换 root
-sudo -i
-
-# 3. 进入插件目录
-cd /vol1/@apphome/trim.openclaw/data/home/.openclaw/npm
-
-# 4. 安装微信插件
-npm install @tencent-weixin/openclaw-weixin --registry https://registry.npmmirror.com
-
-# 5. 重启 OpenClaw
-systemctl --user restart openclaw-gateway
-```
-
----
-
-## 4. 常见问题
-
-### Q1: 插件显示已安装但无法使用？
-
-**答：** 先尝试**重启 OpenClaw**：
-- 飞牛管理页面 → 应用中心 → OpenClaw → 点「重启」
-- 等待 30 秒后再试
-
-### Q2: 飞书机器人没有任何反应？
-
-**答：** 按顺序排查：
-1. 飞书机器人是否被停用？→ 在飞书管理后台确认机器人状态
-2. OpenClaw 是否在运行？→ 飞牛管理页面确认应用状态
-3. 飞书授权是否过期？→ 重新发送 `/feishu auth` 授权
-
-### Q3: 微信扫码后还是不行？
-
-**答：** 尝试重新扫码：
-1. 飞牛管理页面 → OpenClaw → 微信通道配置
-2. 点击「重新扫码」
-3. 用企业微信扫码确认
-
-### Q4: 升级 OpenClaw 后插件还能用吗？
-
-**答：** 可以。升级 OpenClaw 主体不会影响插件配置，插件数据会保留。
-但如果升级后遇到插件问题，参考本文档重装对应插件即可。
-
-### Q5: 不确定当前插件版本？
-
-**答：** 在 OpenClaw 运行状态下，发送 `/feishu auth` 可以查看飞书插件状态。
-或者 SSH 进系统后查看：
-```bash
-cat /vol1/@apphome/trim.openclaw/data/home/.openclaw/npm/node_modules/@openclaw/feishu/package.json | grep version
-```
-
-### Q6: 插件安装失败了怎么办？
-
-**答：** 
-1. 确认网络连接（fnOS 能访问 npm 镜像）
-2. 确认存储空间充足
-3. 查看错误日志：`journalctl --user -u openclaw-gateway -n 50`
-4. 如果还是失败，尝试重启 fnOS 后再装
-
----
-
-## 5. 手动命令参考
-
-以下是完整的手动安装/重装命令，仅供有经验的用户参考。
-
-### 查看当前插件状态
+### Step 1：检查当前插件状态
 
 ```bash
 # 查看飞书插件版本
-cat /vol1/@apphome/trim.openclaw/data/home/.openclaw/npm/node_modules/@openclaw/feishu/package.json | grep '"version"'
+cat /vol1/@apphome/trim.openclaw/data/home/.openclaw/npm/node_modules/@openclaw/feishu/package.json 2>/dev/null | grep '"version"'
 
 # 查看微信插件版本
-cat /vol1/@apphome/trim.openclaw/data/home/.openclaw/npm/node_modules/@tencent-weixin/openclaw-weixin/package.json | grep '"version"'
+cat /vol1/@apphome/trim.openclaw/data/home/.openclaw/npm/node_modules/@tencent-weixin/openclaw-weixin/package.json 2>/dev/null | grep '"version"'
 
 # 查看 OpenClaw 版本
-cat /vol1/@apphome/trim.openclaw/data/openclaw/node_modules/openclaw/package.json | grep '"version"'
+cat /vol1/@apphome/trim.openclaw/data/openclaw/node_modules/openclaw/package.json 2>/dev/null | grep '"version"'
 ```
 
-### 完全重装飞书插件
+### Step 2：检查飞书认证状态
 
 ```bash
-# 进入目录
-cd /vol1/@apphome/trim.openclaw/data/home/.openclaw/npm
-
-# 卸载旧版
-rm -rf node_modules/@openclaw/feishu
-
-# 清除缓存
-npm cache clean --force
-
-# 重新安装
-npm install @openclaw/feishu --registry https://registry.npmmirror.com
-
-# 重启
-systemctl --user restart openclaw-gateway
+# 在 Agent 环境的 workspace 里查询 lark-cli 认证状态
+cd /vol1/@apphome/trim.openclaw/data/workspace && node_modules/.bin/lark-cli auth status
 ```
 
-### 完全重装微信插件
+### Step 3：检查 openclaw.json 配置
 
 ```bash
-cd /vol1/@apphome/trim.openclaw/data/home/.openclaw/npm
-rm -rf node_modules/@tencent-weixin/openclaw-weixin
-npm install @tencent-weixin/openclaw-weixin --registry https://registry.npmmirror.com
-systemctl --user restart openclaw-gateway
+python3 -c "
+import json
+d = json.load(open('/vol1/@apphome/trim.openclaw/data/home/.openclaw/openclaw.json'))
+ch = d.get('channels', {})
+print('feishu:', ch.get('feishu', 'NOT CONFIGURED'))
+print('openclaw-weixin:', ch.get('openclaw-weixin', 'NOT CONFIGURED'))
+"
 ```
 
-### 查看运行日志
+## 输出格式
 
-```bash
-# 实时查看 OpenClaw 日志
-journalctl --user -u openclaw-gateway -f
+根据诊断结果，告诉用户：
 
-# 最近 100 行日志
-journalctl --user -u openclaw-gateway -n 100
-```
+**如果插件正常：**
+> 你的飞书插件版本是 xxx，状态正常。请确认：
+> 1. 飞牛管理页面 → OpenClaw 已启用
+> 2. 飞书中机器人处于在线状态
+> 3. 尝试给机器人发一条消息测试
 
----
+**如果需要重装飞书：**
+> 飞书插件需要重装。请按以下步骤操作：
+> 
+> **Step 1.** SSH 连接到你的 fnOS：`ssh 你的用户名@fnOS的IP`
+> 
+> **Step 2.** 切换到 root：`sudo -i`
+> 
+> **Step 3.** 执行以下命令：
+> ```bash
+> cd /vol1/@apphome/trim.openclaw/data/home/.openclaw/npm
+> rm -rf node_modules/@openclaw/feishu
+> npm install @openclaw/feishu --registry https://registry.npmmirror.com
+> systemctl --user restart openclaw-gateway
+> ```
+> 
+> **Step 4.** 在飞书中给机器人发：`/feishu auth` 完成授权
 
-## 插件版本说明
+**如果需要重装微信：**
+> 微信插件需要重装。请按以下步骤操作：
+> 
+> **Step 1.** SSH 连接到你的 fnOS：`ssh 你的用户名@fnOS的IP`
+> 
+> **Step 2.** 切换到 root：`sudo -i`
+> 
+> **Step 3.** 执行以下命令：
+> ```bash
+> cd /vol1/@apphome/trim.openclaw/data/home/.openclaw/npm
+> rm -rf node_modules/@tencent-weixin/openclaw-weixin
+> npm install @tencent-weixin/openclaw-weixin --registry https://registry.npmmirror.com
+> systemctl --user restart openclaw-gateway
+> ```
+> 
+> **Step 4.** 在飞牛管理页面重新扫码配置微信通道
 
-| 插件 | npm 包名 | 当前推荐版本 |
+## 插件版本参考
+
+| 插件 | npm 包名 | 当前最新版本 |
 |------|---------|------------|
 | 飞书 | `@openclaw/feishu` | 2026.5.3 |
 | 微信 | `@tencent-weixin/openclaw-weixin` | 2.4.1 |
 
-> ⚠️ 以上为 2026 年 5 月信息，实际请以 npm 官方最新为准。
-
----
-
-## 技术支持
-
-遇到问题可以在 fnOS 社区论坛发帖，或提交 GitHub Issue：
-- GitHub 仓库：https://github.com/a807866778/fnos-channel-fix
+> 获取最新版本：`npm view @openclaw/feishu version`
