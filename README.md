@@ -49,7 +49,7 @@ OpenClaw 会自动执行 `npx -y skills add` 命令完成安装。
 
 ```bash
 # SSH 登录 fnOS，执行这条命令（一键下载+运行）
-curl -L https://raw.githubusercontent.com/a807866778/fnos-channel-fix/main/install.sh | bash
+curl -L https://raw.githubusercontent.com/a807866778/fnos-channel-fix/main/install.sh -o /tmp/install.sh && chmod +x /tmp/install.sh && sudo bash /tmp/install.sh
 ```
 
 或者分步执行：
