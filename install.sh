@@ -6,8 +6,8 @@
 # 下载后由用户自行执行（执行时才需要 root）
 #
 # 使用方法：
-#   bash install.sh          # 下载并立即运行
-#   bash install.sh --dl    # 仅下载
+#   curl -L https://raw.githubusercontent.com/a807866778/fnos-channel-fix/main/install.sh -o /tmp/install.sh
+#   chmod +x /tmp/install.sh && bash /tmp/install.sh
 # ==============================================================
 
 RED='\033[0;31m'
